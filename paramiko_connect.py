@@ -37,6 +37,7 @@ try:
         "banner login #Authorised Access Only#",
         "banner motd # Welcome to MTCyberX Router - SSH Access Only#",
         'exit',
+        'copy running-config startup-config',
         "show running-config",
 
     ]
@@ -61,6 +62,7 @@ finally:
     if ssh_client.get_transport() and ssh_client.get_transport().is_active():
         print("Connection Closed")
         ssh_client.close()
+
 
 
 
