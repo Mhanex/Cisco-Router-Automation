@@ -1,2 +1,2 @@
 # Cisco-Router-Automation
-Cisco router automation 
+This is a Python script to automate router configuration using paramiko
