@@ -1,0 +1,12 @@
+<?php require_once __DIR__ . '/common.php';
+$where='1=1'; $params=[];
+if(!empty($_GET['exam_id'])){$where.=' AND ea.exam_id=?';$params[]=(int)$_GET['exam_id'];}
+if(!empty($_GET['student_id'])){$where.=' AND ea.student_id=?';$params[]=(int)$_GET['student_id'];}
+$sql="SELECT ea.*,e.title exam_title,s.reg_no,u.full_name,c.name class_name,sub.name subject_name FROM exam_attempts ea JOIN exams e ON e.id=ea.exam_id JOIN students s ON s.id=ea.student_id JOIN users u ON u.id=s.user_id JOIN classes c ON c.id=e.class_id JOIN subjects sub ON sub.id=e.subject_id WHERE $where ORDER BY ea.id DESC";
+$stmt=$pdo->prepare($sql);$stmt->execute($params);$rows=$stmt->fetchAll();
+$exams=$pdo->query('SELECT id,title FROM exams ORDER BY id DESC')->fetchAll();$students=$pdo->query('SELECT s.id,u.full_name FROM students s JOIN users u ON u.id=s.user_id')->fetchAll();
+include __DIR__ . '/../templates/header.php'; include __DIR__ . '/../templates/sidebar.php'; ?>
+<h4>Results</h4>
+<form class="row g-2 mb-3" method="get"><div class="col-md-3"><select name="exam_id" class="form-select"><option value="">All Exams</option><?php foreach($exams as $e):?><option value="<?=$e['id']?>"><?=e($e['title'])?></option><?php endforeach;?></select></div><div class="col-md-3"><select name="student_id" class="form-select"><option value="">All Students</option><?php foreach($students as $s):?><option value="<?=$s['id']?>"><?=e($s['full_name'])?></option><?php endforeach;?></select></div><div class="col-md-2"><button class="btn btn-primary">Filter</button></div><div class="col-md-4 text-end"><a class="btn btn-outline-secondary" href="exports.php?type=csv">CSV</a> <a class="btn btn-outline-secondary" href="exports.php?type=xlsx">Excel</a> <a class="btn btn-outline-secondary" href="exports.php?type=pdf">PDF</a> <button onclick="window.print()" type="button" class="btn btn-outline-secondary">Print</button></div></form>
+<table class="table table-sm"><tr><th>Reg No</th><th>Name</th><th>Score</th><th>Total</th><th>%</th><th>Start</th><th>Submit</th><th>Status</th><th></th></tr><?php foreach($rows as $r): $p=$r['total']?round(($r['score']/$r['total'])*100,2):0;?><tr><td><?=e($r['reg_no'])?></td><td><?=e($r['full_name'])?></td><td><?=$r['score']?></td><td><?=$r['total']?></td><td><?=$p?></td><td><?=$r['start_time']?></td><td><?=$r['submit_time']?></td><td><?=e($r['status'])?></td><td><a href="result_view.php?id=<?=$r['id']?>" class="btn btn-sm btn-info">View</a></td></tr><?php endforeach;?></table>
+<?php include __DIR__ . '/../templates/footer.php'; ?>

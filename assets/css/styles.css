@@ -1,0 +1,12 @@
+body { background: #f5f7fb; }
+.feature-card { transition: transform .2s, box-shadow .2s; border: 0; }
+.feature-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,.12); }
+.feature-icon { font-size: 1.6rem; color: #0d6efd; }
+.question-palette button { width: 42px; margin: 3px; }
+.palette-answered { background: #198754; color: #fff; }
+.palette-flagged { background: #ffc107; }
+.palette-current { border: 2px solid #0d6efd; }
+.exam-layout { min-height: 70vh; }
+@media print {
+  .no-print { display: none !important; }
+}
