@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CBT Exam Interface</title>
+    <style>
+      :root {
+        --bg: #eef2f7;
+        --panel: #ffffff;
+        --panel-soft: #f8fafc;
+        --text-main: #0f172a;
+        --text-soft: #64748b;
+        --primary: #1d4ed8;
+        --primary-soft: #dbeafe;
+        --success: #16a34a;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --border: #dbe2ea;
+        --shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
+        --radius-lg: 20px;
+        --radius-md: 14px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: linear-gradient(165deg, #eff4fb 0%, #e8edf6 100%);
+        color: var(--text-main);
+      }
+
+      .page {
+        max-width: 1280px;
+        margin: 24px auto;
+        padding: 0 20px;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 24px;
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow);
+      }
+
+      .timer-card {
+        padding: 28px;
+        color: #fff;
+        border: none;
+        background: radial-gradient(circle at top right, #1f5eff, #05215e 65%);
+      }
+
+      .timer-card h3 {
+        margin: 0;
+        letter-spacing: 0.08em;
+        font-size: 0.95rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        opacity: 0.9;
+      }
+
+      .timer {
+        margin: 14px 0 16px;
+        font-size: 3rem;
+        line-height: 1;
+        font-weight: 800;
+      }
+
+      .progress-wrap {
+        margin-bottom: 14px;
+      }
+
+      .progress-track {
+        width: 100%;
+        height: 10px;
+        background: rgba(255, 255, 255, 0.24);
+        border-radius: 999px;
+      }
+
+      .progress-value {
+        width: 58%;
+        height: 100%;
+        background: linear-gradient(90deg, #22c55e, #4ade80);
+        border-radius: 999px;
+      }
+
+      .timer-card p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.88);
+      }
+
+      .nav-card {
+        margin-top: 18px;
+        padding: 24px;
+      }
+
+      .nav-card h4 {
+        margin: 0 0 16px;
+        font-size: 1.35rem;
+      }
+
+      .legend {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 18px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.86rem;
+        color: var(--text-soft);
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+
+      .dot.current {
+        background: var(--primary);
+      }
+
+      .dot.answered {
+        background: var(--success);
+      }
+
+      .dot.review {
+        background: var(--warning);
+      }
+
+      .dot.unanswered {
+        background: #cbd5e1;
+      }
+
+      .question-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+      }
+
+      .question-pill {
+        border: 1px solid #d0dbe8;
+        border-radius: 999px;
+        height: 38px;
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+        background: #fff;
+      }
+
+      .question-pill.current {
+        border-color: var(--primary);
+        background: var(--primary-soft);
+        color: #1e40af;
+      }
+
+      .question-pill.answered {
+        border-color: #bbf7d0;
+        background: #f0fdf4;
+        color: #166534;
+      }
+
+      .main-card {
+        overflow: hidden;
+      }
+
+      .main-header {
+        padding: 28px 30px 20px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .main-header h1 {
+        margin: 0;
+        font-size: clamp(1.5rem, 2.3vw, 2.4rem);
+      }
+
+      .meta-row {
+        margin-top: 14px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 9px 16px;
+        font-weight: 700;
+      }
+
+      .badge.question {
+        background: #ecfdf3;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+      }
+
+      .badge.subject {
+        background: #eff6ff;
+        color: #1d4ed8;
+        border: 1px solid #bfdbfe;
+      }
+
+      .content {
+        padding: 28px 30px;
+        background: var(--panel-soft);
+      }
+
+      .question-text {
+        margin: 0 0 18px;
+        font-size: clamp(1.1rem, 1.4vw, 1.4rem);
+        font-weight: 600;
+      }
+
+      .option-list {
+        display: grid;
+        gap: 14px;
+      }
+
+      .option {
+        border: 1px solid #d2dbe7;
+        border-radius: var(--radius-md);
+        background: #fff;
+        display: grid;
+        grid-template-columns: 60px 1fr;
+        align-items: center;
+        min-height: 76px;
+      }
+
+      .option-marker {
+        height: 100%;
+        border-right: 1px solid #e2e8f0;
+        display: grid;
+        place-items: center;
+        background: #f8fafc;
+      }
+
+      .option-tag {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        color: #fff;
+        background: #3b82f6;
+      }
+
+      .option-label {
+        padding: 0 18px;
+        font-size: 1.12rem;
+      }
+
+      .option.active {
+        border-color: #86efac;
+        box-shadow: 0 0 0 4px #dcfce7;
+      }
+
+      .option.active .option-tag {
+        background: var(--success);
+      }
+
+      .footer {
+        padding: 20px 30px 26px;
+        border-top: 1px solid var(--border);
+        background: #fff;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .btn-group {
+        display: flex;
+        gap: 12px;
+      }
+
+      button {
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 700;
+        padding: 12px 22px;
+        cursor: pointer;
+      }
+
+      .btn-secondary {
+        background: #e2e8f0;
+        color: #1e293b;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+      }
+
+      .btn-success {
+        background: var(--success);
+        color: #fff;
+      }
+
+      @media (max-width: 1024px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .nav-card {
+          margin-top: 24px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .page {
+          margin: 14px auto;
+          padding: 0 10px;
+        }
+
+        .main-header,
+        .content,
+        .footer,
+        .timer-card,
+        .nav-card {
+          padding: 18px;
+        }
+
+        .question-grid {
+          grid-template-columns: repeat(4, 1fr);
+        }
+
+        .timer {
+          font-size: 2.3rem;
+        }
+
+        .btn-group,
+        .footer {
+          width: 100%;
+        }
+
+        .btn-group {
+          justify-content: space-between;
+        }
+
+        button {
+          flex: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="layout">
+        <aside>
+          <div class="card timer-card">
+            <h3>Time Remaining</h3>
+            <div class="timer">00:24:08</div>
+            <div class="progress-wrap">
+              <div class="progress-track">
+                <div class="progress-value"></div>
+              </div>
+            </div>
+            <p>Read every question carefully and submit before timer ends.</p>
+          </div>
+
+          <div class="card nav-card">
+            <h4>Question Navigator</h4>
+            <div class="legend">
+              <div class="legend-item"><span class="dot current"></span>Current</div>
+              <div class="legend-item"><span class="dot answered"></span>Answered</div>
+              <div class="legend-item"><span class="dot review"></span>Review</div>
+              <div class="legend-item"><span class="dot unanswered"></span>Unanswered</div>
+            </div>
+            <div class="question-grid">
+              <div class="question-pill answered">1</div>
+              <div class="question-pill current">2</div>
+              <div class="question-pill">3</div>
+              <div class="question-pill">4</div>
+              <div class="question-pill">5</div>
+              <div class="question-pill answered">6</div>
+              <div class="question-pill">7</div>
+              <div class="question-pill">8</div>
+              <div class="question-pill">9</div>
+              <div class="question-pill">10</div>
+            </div>
+          </div>
+        </aside>
+
+        <main class="card main-card">
+          <header class="main-header">
+            <h1>First Term Examination Makeup — Chemistry</h1>
+            <div class="meta-row">
+              <span class="badge question">Question 2 of 10</span>
+              <span class="badge subject">Section: Hydrocarbons</span>
+            </div>
+          </header>
+
+          <section class="content">
+            <h2 class="question-text">What is the main component of natural gas?</h2>
+
+            <div class="option-list">
+              <div class="option">
+                <div class="option-marker"><span class="option-tag">A</span></div>
+                <div class="option-label">Butane</div>
+              </div>
+
+              <div class="option">
+                <div class="option-marker"><span class="option-tag">B</span></div>
+                <div class="option-label">Propane</div>
+              </div>
+
+              <div class="option">
+                <div class="option-marker"><span class="option-tag">C</span></div>
+                <div class="option-label">Ethane</div>
+              </div>
+
+              <div class="option active">
+                <div class="option-marker"><span class="option-tag">D</span></div>
+                <div class="option-label">Methane</div>
+              </div>
+            </div>
+          </section>
+
+          <footer class="footer">
+            <div class="btn-group">
+              <button class="btn-secondary">← Previous</button>
+              <button class="btn-primary">Next →</button>
+            </div>
+            <button class="btn-success">Save & Submit</button>
+          </footer>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
