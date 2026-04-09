@@ -1,0 +1,10 @@
+<?php require_once __DIR__ . '/common.php';
+if(isset($_POST['type']) && $_POST['type']==='difficulty') $pdo->prepare('INSERT INTO difficulty_levels(name) VALUES(?)')->execute([trim($_POST['name'])]);
+if(isset($_POST['type']) && $_POST['type']==='group') $pdo->prepare('INSERT INTO question_groups(name,subject_id,class_id) VALUES(?,?,?)')->execute([trim($_POST['name']),(int)$_POST['subject_id'],(int)$_POST['class_id']]);
+$levels=$pdo->query('SELECT * FROM difficulty_levels')->fetchAll(); $groups=$pdo->query('SELECT qg.*,s.name subject,c.name class FROM question_groups qg JOIN subjects s ON s.id=qg.subject_id JOIN classes c ON c.id=qg.class_id')->fetchAll();
+$subjects=$pdo->query('SELECT * FROM subjects')->fetchAll(); $classes=$pdo->query('SELECT * FROM classes')->fetchAll();
+include __DIR__ . '/../templates/header.php'; include __DIR__ . '/../templates/sidebar.php'; ?>
+<h4>Add Question Level & Group</h4>
+<div class="row"><div class="col-md-6"><form method="post" class="mb-3"><input type="hidden" name="type" value="difficulty"><div class="input-group"><input name="name" class="form-control" placeholder="Difficulty"><button class="btn btn-primary">Add</button></div></form><ul class="list-group"><?php foreach($levels as $l):?><li class="list-group-item"><?=e($l['name'])?></li><?php endforeach;?></ul></div>
+<div class="col-md-6"><form method="post" class="mb-3"><input type="hidden" name="type" value="group"><input name="name" class="form-control mb-2" placeholder="Group" required><select name="class_id" class="form-select mb-2"><?php foreach($classes as $c):?><option value="<?=$c['id']?>"><?=e($c['name'])?></option><?php endforeach;?></select><select name="subject_id" class="form-select mb-2"><?php foreach($subjects as $s):?><option value="<?=$s['id']?>"><?=e($s['name'])?></option><?php endforeach;?></select><button class="btn btn-primary">Add Group</button></form><ul class="list-group"><?php foreach($groups as $g):?><li class="list-group-item"><?=e($g['name'])?> (<?=e($g['class'])?> - <?=e($g['subject'])?>)</li><?php endforeach;?></ul></div></div>
+<?php include __DIR__ . '/../templates/footer.php'; ?>
